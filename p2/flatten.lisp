@@ -10,7 +10,11 @@
       (print rn)
       (print pn)
       (print sn)
-      (list rn pn sn))))
+      (setf rps-hash-table (make-hash-table :size 100))
+      (setf (gethash 'r rps-hash-table) rn)
+      (setf (gethash 'p rps-hash-table) pn)
+      (setf (gethash 's rps-hash-table) sn)
+      rps-hash-table)))
 
 (setf x1 '(1 R))
 (setf x2 '(1 R))
@@ -24,4 +28,9 @@
 (push x3 x)
 (push x4 x)
 (push x5 x)
+
 (flatten-current-play x)
+
+(gethash 'r rps-hash-table)
+(gethash 'p rps-hash-table)
+(gethash 's rps-hash-table)
