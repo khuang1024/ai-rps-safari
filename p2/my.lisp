@@ -204,7 +204,6 @@
         (print scores)
         (print results)
         (setf rps-agent-update-table (list-to-hash-table (first results)))
-;        (setf rps-agent-update-table (flatten-results results)) ; put r, p, s into table
         (dotimes (x (length agents))
           (setf (gethash (nth x agents) rps-agent-update-table) (nth x scores)))
         (print rps-agent-update-table)
@@ -220,19 +219,6 @@
         (if (nth x legal-status)
           (push (list (nth x agents) (nth x scores)) net-scores)
           nil))
-      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      ;(print net-scores)
-      ;(print results)
-;      (setf rps-agent-update-table (flatten-results results)) ; put r, p, s into table
-;      (dolist (agent-score net-scores) ; put agents into table
-;        (setf (gethash (first agent-score) rps-agent-update-table) (second agent-score)))
-      ;(print rps-agent-update-table)
-      ;(init-avg-returns agents) ; this should actually be in monitor, here for test
-
-      ; don't forget to add 1 to numtournament! the first value of numtournament is 0!
-;      (update-avg-returns rps-agent-update-table (1+ numtournament)) 
-;      (show-avg-returns agents)
-      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (print (reverse (compress-agents net-scores)))))
     
 ;(tournament '(simple-agent simple-agent2 simple-agent3 random-agent illegal-agent) 100)
