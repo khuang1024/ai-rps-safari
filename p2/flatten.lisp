@@ -16,6 +16,33 @@
       (setf (gethash 's rps-hash-table) sn)
       rps-hash-table)))
 
+(defun flatten-results(results)
+  (if results
+    (progn
+      (setf rps-table (make-hash-table :size 100))
+      (setf (gethash 'r rps-table) 0)
+      (setf (gethash 'p rps-table) 0)
+      (setf (gethash 's rps-table) 0)
+      (dotimes (th (length results))
+        (print th)
+        (print "xx")
+        (setf (gethash 'r rps-table) (+ (gethash 'r rps-table) (first (nth th results))))
+        (setf (gethash 'p rps-table) (+ (gethash 'p rps-table) (second (nth th results))))
+        (setf (gethash 's rps-table) (+ (gethash 's rps-table) (third (nth th results)))))
+      rps-table)))
+
+(setf y1 '(1 2 3))
+(setf y2 '(3 3 3))
+(setf y3 '(4 2 1))
+(setf y4 '(3 9 2))
+(setf y (list y1 y2 y3 y4))
+(flatten-results y)
+(gethash 'r rps-table)
+(gethash 'p rps-table)
+(gethash 's rps-table)
+
+
+
 (setf x1 '(1 R))
 (setf x2 '(1 R))
 (setf x3 '(1 P))
