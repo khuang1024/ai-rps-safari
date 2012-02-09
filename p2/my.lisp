@@ -120,6 +120,28 @@
   (if agent-list
     (dolist (agnt agent-list)
       (print (gethash agnt *avg-returns*)))))
+
+
+(defun flatten-current-play (curplay)
+  ;; This function flattens current-play so as to have a list
+  ;; which indicates how many rock, paper, scissor appear.
+  (if curplay
+    (let ((rn 0) (pn 0) (sn 0))
+      (dotimes (x (length curplay))
+        (print "asdadsads")
+        (case (second (nth x curplay))
+          (r (setq rn (+ rn (first (nth x curplay)))))
+          (p (setq pn (+ pn (first (nth x curplay)))))
+          (s (setq sn (+ sn (first (nth x curplay)))))))
+      (print rn)
+      (print pn)
+      (print sn)
+      (setf rps-hash-table (make-hash-table :size 100))
+      (setf (gethash 'r rps-hash-table) rn)
+      (setf (gethash 'p rps-hash-table) pn)
+      (setf (gethash 's rps-hash-table) sn)
+      rps-hash-table)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -149,6 +171,10 @@
 		      (push plyval current-play)
 		      (setq num (+ 1 num))))))
 	    (setq current-play (reverse current-play))
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (let ((update-table (make-hash-table :size 100))
+              (
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	    (dotimes (frmagent (length agents))
 	      (let* ((curagent frmagent) (play (nth curagent current-play)) (shoot (second play)) (bid (first play)))
 		(if (nth curagent legal-status)
@@ -168,6 +194,7 @@
       (reverse (compress-agents net-scores))
       ))
 ;(tournament '(simple-agent simple-agent2 simple-agent3 random-agent illegal-agent) 100)
+(tournament '(simple-agent simple-agent2 simple-agent3 random-agent) 10)
 
 
 (defun sign (input)
