@@ -63,7 +63,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun legalp (&optional parameters)
-  ;; This function validate the play/input given by the player.
+  ;; This function validates the play/input given by the player.
   (if parameters ; when the input is null, return false
     (if (listp parameters) ; when the input is not a list, return false
       (and
@@ -128,7 +128,7 @@
 
 
 (defun flatten-results(results)
-  ;; This function add up the count of r,p,s
+  ;; This function adds up the count of r,p,s
   (if results
     (progn
       (setf rps-table (make-hash-table :size 100))
