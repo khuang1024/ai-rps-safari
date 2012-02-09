@@ -1,6 +1,8 @@
 ;;; 1. my legalp is added
 ;;; 2. random-agent is added
 ;;; 3. monitor is modified, eliminating undefined agents
+;;; 4. *avg-returns* are added
+;;; 5. manipulation functions for *avg-returns* are added
 ;;;
 ;;;; CMPS 140 Tournament Monitor
 ;;;; Each agent starts with 200 points. There are 1000 rounds per tournament.
@@ -50,7 +52,11 @@
 		  (push (first agnt) results)))))
     results))
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;   This is my legalp function.  ;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun legalp (&optional parameters)
   ;; This function validate the play/input given by the player.
   (if parameters ; when the input is null, return false
@@ -77,6 +83,47 @@
 
 ;; create the global list *avg-returns*
 (setf *avg-returns* (make-hash-table :size 100))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;    These functions manipulate *avg-returns*    ;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun init-avg-returns (&optional agent-list)
+  ;; This function is used for initializing *avg-returns*.
+  (setf (gethash 'r *avg-returns*) 0)
+  (setf (gethash 'p *avg-returns*) 0)
+  (setf (gethash 's *avg-returns*) 0)
+  (if agent-list
+    (if (listp agent-list)
+      (dolist (agnt agent-list)
+        (setf (gethash agnt *avg-returns*) 0))
+      (print "The input is not a list. Only initilize (r p s) in *avg-returns*."))
+    (print "The input is null. Only initilize (r p s) in *avg-returns*.")))
+
+(defun update-avg-returns (rps-agent-list so-far-numrounds)
+  ;; This function updates *avg-returns* by using the hash table rps-agent-list which stores the increment value for
+  ;; each key/value pair in *avg-returns*. Note that number of rounds so far should be indicated for average calculation.
+  (if (and (hash-table-p rps-agent-list) (numberp so-far-numrounds))
+    (if (= (hash-table-count *avg-returns*) (hash-table-count rps-agent-list))
+      (maphash #'(lambda (k v)
+                   (setf (gethash k *avg-returns*) (/ (+ (* v (1- so-far-numrounds)) (gethash k rps-agent-list)) so-far-numrounds)))
+               *avg-returns*)
+      (print "Update failed: the size of *avg-returns* and update table are not identical."))
+    (print "Update failed: the first argument is not a hash table or the second argument is not a number.")))
+
+(defun show-avg-returns (&optional agent-list)
+  ;; This function basically shows the values of *avg-returns*.
+  (print (gethash 'r *avg-returns*))
+  (print (gethash 'p *avg-returns*))
+  (print (gethash 's *avg-returns*))
+  (if agent-list
+    (dolist (agnt agent-list)
+      (print (gethash agnt *avg-returns*)))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun tournament (agents numtimes)
   (let ((scores (make-list (length agents) :initial-element 200))
