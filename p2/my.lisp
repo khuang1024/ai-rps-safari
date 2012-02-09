@@ -15,12 +15,11 @@
 (defun random-agent (rounds scores myscore)
   (list '1 (nth (random 3)
 		'(R P S))))
-
-
 (defun verbose-agent (r s m)
   (let ((shoot (nth (random 3)
 		'(R P S))) (amount (+ 1 (random 4))))
   (list amount shoot)))
+
 
 (defun replace-nth (list n elem)
   (cond 
@@ -28,9 +27,11 @@
     ((equal n 0) (cons elem (cdr list)))
     (t (cons (car list) (replace-nth (cdr list) (- n 1) elem)))))
 
+
 ;;; Monitor takes a list of agents, returns an ordered list of winners.
 (defun sort-agents (agent-scores)
   (sort agent-scores #'(lambda (x y) (< (second x) (second y)))))
+
 
 (defun compress-agents (agents)
   (setq agents (sort-agents agents))
@@ -48,6 +49,7 @@
 		  (setq lastscore (second agnt))
 		  (push (first agnt) results)))))
     results))
+
 
 (defun legalp (&optional parameters)
   ;; This function validate the play/input given by the player.
@@ -72,6 +74,9 @@
           (if (= 1 (abs (first parameters)))
             t
             nil))))))
+
+;; create the global list *avg-returns*
+(setf *avg-returns* (make-hash-table :size 100))
 
 (defun tournament (agents numtimes)
   (let ((scores (make-list (length agents) :initial-element 200))
@@ -117,6 +122,7 @@
       ))
 ;(tournament '(simple-agent simple-agent2 simple-agent3 random-agent illegal-agent) 100)
 
+
 (defun sign (input)
   (if (= input 0)
       0
@@ -130,21 +136,21 @@
 ;;;; hash-table to the tournament numtimes times
 (defun monitor (agent-list numtimes)
   (let (results (agents (make-hash-table :size 100)))
-  (dolist (agnt agent-list)
-    (setf (gethash agnt agents) 0))
-  (dotimes (x numtimes)
-    (let ((curRank 0) (results (tournament agent-list 1000)))
-      (dolist (agent-result results)
-	  (if (listp agent-result)
-	      (progn
-		(dolist (curagent agent-result)
-		  (setf (gethash curagent agents) (+ (gethash curagent agents) curRank)))
-		(setq curRank (+ curRank (length agent-result))))
-	      (progn
-		(setf (gethash agent-result agents) (+ (gethash agent-result agents) curRank))
-		(setq curRank (+ curRank 1)))))))
-  (maphash #'(lambda (k v) (push (cons k (- (length agent-list) (ceiling (/ v numtimes)))) results)) agents)
-  results))
+    (dolist (agnt agent-list)
+      (setf (gethash agnt agents) 0))
+    (dotimes (x numtimes)
+      (let ((curRank 0) (results (tournament agent-list 1000)))
+        (dolist (agent-result results)
+          (if (listp agent-result)
+            (progn
+              (dolist (curagent agent-result)
+                (setf (gethash curagent agents) (+ (gethash curagent agents) curRank)))
+              (setq curRank (+ curRank (length agent-result))))
+            (progn
+              (setf (gethash agent-result agents) (+ (gethash agent-result agents) curRank))
+              (setq curRank (+ curRank 1)))))))
+    (maphash #'(lambda (k v) (push (cons k (- (length agent-list) (ceiling (/ v numtimes)))) results)) agents)
+    results))
 
 ;; Returns a list of dotted pairs, with the agent and the score (numagents - avg rank)
 ;(monitor '(simple-agent simple-agent2 simple-agent3 random-agent ) 1000)
