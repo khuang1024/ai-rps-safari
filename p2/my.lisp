@@ -3,6 +3,11 @@
 ;;; 3. monitor is modified, eliminating undefined agents
 ;;; 4. *avg-returns* are added
 ;;; 5. manipulation functions for *avg-returns* are added
+;;; 6. added flatten-results function for compressing results
+;;; 7. added *avg-return*. see comments in tournament and monitor
+;;;
+;;; remarks:
+;;;     run the monitor just by loading this source file in sbcl
 ;;;
 ;;;; CMPS 140 Tournament Monitor
 ;;;; Each agent starts with 200 points. There are 1000 rounds per tournament.
@@ -86,7 +91,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;    These functions manipulate *avg-returns*    ;;;;;;;;;;;;;;;;;;;;
+;;;;;;;    My other functions, most of them manipulate *avg-returns*    ;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun init-avg-returns (&optional agent-list)
@@ -122,38 +127,41 @@
       (print (gethash agnt *avg-returns*)))))
 
 
-(defun flatten-current-play (curplay)
-  ;; This function flattens current-play so as to have a list
-  ;; which indicates how many rock, paper, scissor appear.
-  (if curplay
-    (let ((rn 0) (pn 0) (sn 0))
-      (dotimes (x (length curplay))
-        (print "asdadsads")
-        (case (second (nth x curplay))
-          (r (setq rn (+ rn (first (nth x curplay)))))
-          (p (setq pn (+ pn (first (nth x curplay)))))
-          (s (setq sn (+ sn (first (nth x curplay)))))))
-      (print rn)
-      (print pn)
-      (print sn)
-      (setf rps-hash-table (make-hash-table :size 100))
-      (setf (gethash 'r rps-hash-table) rn)
-      (setf (gethash 'p rps-hash-table) pn)
-      (setf (gethash 's rps-hash-table) sn)
-      rps-hash-table)))
-
+(defun flatten-results(results)
+  ;; This function add up the count of r,p,s
+  (if results
+    (progn
+      (setf rps-table (make-hash-table :size 100))
+      (setf (gethash 'r rps-table) 0)
+      (setf (gethash 'p rps-table) 0)
+      (setf (gethash 's rps-table) 0)
+      (dotimes (th (length results))
+        (setf (gethash 'r rps-table) (+ (gethash 'r rps-table) (first (nth th results))))
+        (setf (gethash 'p rps-table) (+ (gethash 'p rps-table) (second (nth th results))))
+        (setf (gethash 's rps-table) (+ (gethash 's rps-table) (third (nth th results)))))
+      rps-table)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun tournament (agents numtimes)
+(defun sign (input)
+  (if (= input 0)
+      0
+      (if (< input 0)
+	  -1
+	  1)))	      
+;;;; (sign 2)
+
+(defun tournament (agents numtimes numtournament)
+  ;; This function is modified a little bit by adding a new argument -- numtournament.
+  ;; This is for calculating *avg-returns*.
   (let ((scores (make-list (length agents) :initial-element 200))
 	(net-scores nil) (results nil) (legal-status (make-list (length agents) :initial-element t)))
     (print "Running tournament")
       (do ((iter 0 (setq iter (+ iter 1))))
 	  ((= iter numtimes))
-	(let ((num 0) (r 0) (p 0) (s 0) (current-play nil))
+      (let ((num 0) (r 0) (p 0) (s 0) (current-play nil))
 	    ;; Run each agent
 	    (dolist (curagent agents)
 	      (let* ((plyval (funcall curagent results scores (nth num scores))) (bid (first plyval)))
@@ -171,49 +179,50 @@
 		      (push plyval current-play)
 		      (setq num (+ 1 num))))))
 	    (setq current-play (reverse current-play))
-        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (let ((update-table (make-hash-table :size 100))
-              (
-        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	    (dotimes (frmagent (length agents))
 	      (let* ((curagent frmagent) (play (nth curagent current-play)) (shoot (second play)) (bid (first play)))
-		(if (nth curagent legal-status)
-		    (setq scores (replace-nth scores curagent (+ (nth curagent scores)
-								 (* bid
-								    (sign (case shoot
-								      (r (- s p))
-								      (p (- r s))
-								      (s (- p r))
-								      (t 0)))))))
-		    (setq scores (replace-nth scores curagent 0)))))
-	    (push (list r p s) results)))
+            (if (nth curagent legal-status)
+              (setq scores (replace-nth scores curagent (+ (nth curagent scores)
+                                                           (* bid
+                                                              (sign (case shoot
+                                                                      (r (- s p))
+                                                                      (p (- r s))
+                                                                      (s (- p r))
+                                                                      (t 0)))))))
+              (setq scores (replace-nth scores curagent 0)))))
+        (push (list r p s) results)))
       (dotimes (x (length agents))
-	(if (nth x legal-status)
-	    (push (list (nth x agents) (nth x scores)) net-scores)
-	    nil))
-      (reverse (compress-agents net-scores))
-      ))
+        (if (nth x legal-status)
+          (push (list (nth x agents) (nth x scores)) net-scores)
+          nil))
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      ;(print net-scores)
+      ;(print results)
+      (setf rps-agent-update-table (flatten-results results)) ; put r, p, s into table
+      (dolist (agent-score net-scores) ; put agents into table
+        (setf (gethash (first agent-score) rps-agent-update-table) (second agent-score)))
+      ;(print rps-agent-update-table)
+      ;(init-avg-returns agents) ; this should actually be in monitor, here for test
+
+      ; don't forget to add 1 to numtournament! the first value of numtournament is 0!
+      (update-avg-returns rps-agent-update-table (1+ numtournament)) 
+      (show-avg-returns agents)
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (print (reverse (compress-agents net-scores)))))
+    
 ;(tournament '(simple-agent simple-agent2 simple-agent3 random-agent illegal-agent) 100)
-(tournament '(simple-agent simple-agent2 simple-agent3 random-agent) 10)
-
-
-(defun sign (input)
-  (if (= input 0)
-      0
-      (if (< input 0)
-	  -1
-	  1)))	      
-;;;; (sign 2)
+;(tournament '(simple-agent simple-agent2 simple-agent3 random-agent) 10 1)
 
 
 ;;;; Takes a list of agents, inserts them in a hash-table and passes theo
 ;;;; hash-table to the tournament numtimes times
 (defun monitor (agent-list numtimes)
   (let (results (agents (make-hash-table :size 100)))
+    (init-avg-returns agent-list)
     (dolist (agnt agent-list)
       (setf (gethash agnt agents) 0))
     (dotimes (x numtimes)
-      (let ((curRank 0) (results (tournament agent-list 1000)))
+      (let ((curRank 0) (results (tournament agent-list 10 x)))
         (dolist (agent-result results)
           (if (listp agent-result)
             (progn
@@ -227,6 +236,6 @@
     results))
 
 ;; Returns a list of dotted pairs, with the agent and the score (numagents - avg rank)
-;(monitor '(simple-agent simple-agent2 simple-agent3 random-agent ) 1000)
+(monitor '(simple-agent simple-agent2 simple-agent3 random-agent ) 3)
 
 ;(monitor agentlist 1000)
