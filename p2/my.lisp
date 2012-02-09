@@ -126,6 +126,15 @@
     (dolist (agnt agent-list)
       (print (gethash agnt *avg-returns*)))))
 
+(defun list-to-hash-table(results)
+  ;; This function tranforms the results of r,p,s into a hash table
+  (if results
+    (progn
+      (setf rps-table (make-hash-table :size 100))
+      (setf (gethash 'r rps-table) (first results))
+      (setf (gethash 'p rps-table) (second results))
+      (setf (gethash 's rps-table) (third results))
+      rps-table)))
 
 (defun flatten-results(results)
   ;; This function adds up the count of r,p,s
@@ -190,7 +199,23 @@
                                                                       (s (- p r))
                                                                       (t 0)))))))
               (setq scores (replace-nth scores curagent 0)))))
-        (push (list r p s) results)))
+        (push (list r p s) results)
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (print scores)
+        (print results)
+        (setf rps-agent-update-table (list-to-hash-table (first results)))
+;        (setf rps-agent-update-table (flatten-results results)) ; put r, p, s into table
+        (dotimes (x (length agents))
+          (setf (gethash (nth x agents) rps-agent-update-table) (nth x scores)))
+        (print rps-agent-update-table)
+        ;(init-avg-returns agents) ; this should actually be in monitor, here for test
+        
+        ;don't forget to add 1 to numtournament! the first value of numtournament is 0!
+        (update-avg-returns rps-agent-update-table (+ (1+ iter) (* numtimes numtournament)))
+        (show-avg-returns agents)
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+        ))
       (dotimes (x (length agents))
         (if (nth x legal-status)
           (push (list (nth x agents) (nth x scores)) net-scores)
@@ -198,15 +223,15 @@
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;(print net-scores)
       ;(print results)
-      (setf rps-agent-update-table (flatten-results results)) ; put r, p, s into table
-      (dolist (agent-score net-scores) ; put agents into table
-        (setf (gethash (first agent-score) rps-agent-update-table) (second agent-score)))
+;      (setf rps-agent-update-table (flatten-results results)) ; put r, p, s into table
+;      (dolist (agent-score net-scores) ; put agents into table
+;        (setf (gethash (first agent-score) rps-agent-update-table) (second agent-score)))
       ;(print rps-agent-update-table)
       ;(init-avg-returns agents) ; this should actually be in monitor, here for test
 
       ; don't forget to add 1 to numtournament! the first value of numtournament is 0!
-      (update-avg-returns rps-agent-update-table (1+ numtournament)) 
-      (show-avg-returns agents)
+;      (update-avg-returns rps-agent-update-table (1+ numtournament)) 
+;      (show-avg-returns agents)
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (print (reverse (compress-agents net-scores)))))
     
@@ -222,7 +247,7 @@
     (dolist (agnt agent-list)
       (setf (gethash agnt agents) 0))
     (dotimes (x numtimes)
-      (let ((curRank 0) (results (tournament agent-list 10 x)))
+      (let ((curRank 0) (results (tournament agent-list 2 x)))
         (dolist (agent-result results)
           (if (listp agent-result)
             (progn
@@ -236,6 +261,6 @@
     results))
 
 ;; Returns a list of dotted pairs, with the agent and the score (numagents - avg rank)
-(monitor '(simple-agent simple-agent2 simple-agent3 random-agent ) 3)
+(monitor '(simple-agent simple-agent2 simple-agent3 random-agent ) 2)
 
 ;(monitor agentlist 1000)
