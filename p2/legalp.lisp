@@ -1,7 +1,7 @@
 (defun legalp (&optional parameters)
   ;; This function validate the play/input given by the player.
-  (if parameters
-    (if (listp parameters)
+  (if parameters  ; when the input is null, return false
+    (if (listp parameters) ; when the input is not a list, return false
       (and
         (= (length parameters) 3) ; there should be only three parameters
         (atom (first parameters)) ; bet is atom rather than cons
