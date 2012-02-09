@@ -49,6 +49,29 @@
 		  (push (first agnt) results)))))
     results))
 
+(defun legalp (parameters)
+  ;; This function validate the play/input given by the player.
+  (and
+    (= (length parameters) 3) ; there should be exactly three parameters
+    (atom (first parameters)) ; bet is atom rather than cons
+    (atom (second parameters)) ; choice is atom rather than cons
+    (atom (third parameters)) ; score is atom rather than cons
+    (member (second parameters) '(r p s)) ; choice must be one of r p s
+    (not (null (first parameters))) ; bet cannot be nil
+    (not (null (second parameters))) ; choice cannot be nil
+    (not (null (third parameters))) ; score cannot be nil
+    (not (= (first parameters) 0)) ; bet cannot be 0
+    (if (> (third parameters) 0)
+       ; when score > 0
+       (if (< (third parameters) (abs (first parameters)))
+         nil
+         t)
+       ; when score <= 0
+       (if (= 1 (abs (first parameters)))
+         t
+         nil))))
+
+#|
 (defun legalp (bet choice score)
   ;; This function validate the play/input given by the player.
   (and
@@ -69,6 +92,7 @@
        (if (= 1 (abs bet))
          t
          nil))))
+|#
 
 (defun tournament (agents numtimes)
   (let ((scores (make-list (length agents) :initial-element 200))
@@ -80,7 +104,7 @@
 	    ;; Run each agent
 	    (dolist (curagent agents)
 	      (let* ((plyval (funcall curagent results scores (nth num scores))) (bid (first plyval)))
-		(if (legalp (first plyval) (second plyval) (nth num scores))
+		(if (legalp (list (first plyval) (second plyval) (nth num scores)))
 		    (progn 
 		      (case (second plyval)
 			(r (setq r (+ r bid)))
@@ -119,9 +143,10 @@
       0
       (if (< input 0)
 	  -1
-	  1)))
-	      
-(sign 2)
+	  1)))	      
+;;;; (sign 2)
+
+
 ;;;; Takes a list of agents, inserts them in a hash-table and passes theo
 ;;;; hash-table to the tournament numtimes times
 (defun monitor (agent-list numtimes)
