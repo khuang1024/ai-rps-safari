@@ -13,16 +13,16 @@
 ;;; the default starting points it used to have.
 
 
-
 (defun agent(rounds scores myscore)
   ;; This function is the agent function which is supposed to be called
   ;; when it is competing with other agents in tournament.
-  (if (not (and (listp rounds) (listp scores) (numberp myscore)))
-    (list '1 (nth (random 3) '(r p s))) ; if the input is invalid, just do a random bet
-    (progn
-      (setf frounds (flatten-rounds rounds))
-      (setf mybet (bet frounds myscore))
-      mybet)))
+  (if (or (null rounds) (null scores) (null myscore))
+    (list '1 (nth (random 3) '(r p s))) ; if the input is initial state, just do a random bet
+    (if (not (and (listp rounds) (listp scores) (numberp myscore)))
+      (list '1 (nth (random 3) '(r p s))) ; if the input is invalid, just do a random bet
+      (progn
+        (setf frounds (flatten-rounds rounds))
+        (list (bet-weight myscore) (bet-choice frounds))))))
 
 (defun flatten-rounds (rounds)
   ;; This function sums up all rock, paper and scissor
@@ -34,6 +34,25 @@
         (setf s (+ s (third element))))
       (list r p s))))
 
+(defun bet-weight (myscore)
+  (progn 
+    (setf x (ceiling (* 10 (atan (* 0.05 (- myscore 200))))))
+    (numberp x)
+    x))
+
+(defun bet-choice (rounds)
+  ;; This function makes the bet decision.
+  (let ((r (- (third rounds) (second rounds)))
+        (p (- (first rounds) (third rounds)))
+        (s (- (second rounds) (first rounds))))
+    (if (equal r (max r p s))
+      (setf choice 'r)
+      (if (equal p (max r p s))
+        (setf choice 'p)
+        (setf choice 's)))
+    choice))
+
+#|
 (defun bet(rounds myscore)
   ;; This function makes the bet decision.
   (let ((r (- (third rounds) (second rounds)))
@@ -46,22 +65,18 @@
         (setf choice 's)))
 
     ;; how much is the bet?
-    (setf bid (* 10 (atan (* 0.05 (- myscore 200)))))
+    (setf bid (ceiling (* 10 (atan (* 0.05 (- myscore 200))))))
     (list bid choice)))
-
-(defun avg (scores)
-  ;; This function calculates the average scores of all these agents.
-  (/ (reduce #'+ scores) (length scores)))
-
-
-
+|#
 ;; test cases
 (setf y1 '(1 2 3))
 (setf y2 '(3 3 3))
 (setf y3 '(4 2 1))
 (setf y4 '(3 9 2))
-(setf y (list y1 y2 y3 y4))
-
-(setf rounds y)
+(setf rounds (list y1 y2 y3 y4))
 (setf scores '(210 200 190 200))
-(my-agent rounds scores 230)
+(setf bid (agent rounds scores 230))
+;(funcall x-agent rounds scores 230)
+;(numberp (first bid))
+;(setf funs (list x-agent x-agent x-agent))
+;(first (funcall (first funs) rounds scores 230)
