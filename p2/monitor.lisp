@@ -191,7 +191,7 @@
     (dolist (agnt agent-list)
       (setf (gethash agnt agents) 0))
     (dotimes (x numtimes)
-      (let ((curRank 0) (results (tournament agent-list 2 x)))
+      (let ((curRank 0) (results (tournament agent-list 1000 x)))
         (dolist (agent-result results)
           (if (listp agent-result)
             (progn
