@@ -1,3 +1,7 @@
+;;; All the functions below are deprecated.
+;;; Don't use it any more.
+
+
 (defun init-avg-returns (&optional agent-list)
   ;; This function is used for initializing *avg-returns*.
   (setf (gethash 'r *avg-returns*) 0)

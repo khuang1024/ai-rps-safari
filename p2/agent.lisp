@@ -1,4 +1,4 @@
-;;;; CMPS 240: Artificial Intelligence, P2 - monitor
+;;;; CMPS 240: Artificial Intelligence, P2 - agent 
 ;;; Kerui Huang
 ;;;
 ;;; 1. This agent takes the total numbers of rock, paper, scissor into
