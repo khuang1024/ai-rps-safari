@@ -107,63 +107,8 @@
     (setf (second *avg-returns*) (/ p rounds))
     (setf (third *avg-returns*) (/ s rounds))
     (dotimes (y (length scores))
-      ;(print "====")
-      ;(print results)
-      ;(print (length results))
-      ;(print y)
-      ;(print (+ 3 y))
-      ;(print (nth (+ 3 y) *avg-returns*))
-      ;(print *avg-returns*)
-      ;(print (nth y scores))
-      ;(print scores)
-      ;(print "====")
       (setf (nth (+ 3 y) *avg-returns*) (/ (nth y scores) rounds)))
     *avg-returns*))
-
-
-#|
-(defun init-avg-returns (&optional agent-list)
-  ;; This function is used for initializing *avg-returns*.
-  (setf (gethash 'r *avg-returns*) 0)
-  (setf (gethash 'p *avg-returns*) 0)
-  (setf (gethash 's *avg-returns*) 0)
-  (if agent-list
-    (if (listp agent-list)
-      (dolist (agnt agent-list)
-        (setf (gethash agnt *avg-returns*) 0))
-      (print "The input is not a list. Only initilize (r p s) in *avg-returns*."))
-    (print "The input is null. Only initilize (r p s) in *avg-returns*.")))
-
-(defun update-avg-returns (rps-agent-list so-far-numrounds)
-  ;; This function updates *avg-returns* by using the hash table rps-agent-list which stores the increment value for
-  ;; each key/value pair in *avg-returns*. Note that number of rounds so far should be indicated for average calculation.
-  (if (and (hash-table-p rps-agent-list) (numberp so-far-numrounds))
-    (if (= (hash-table-count *avg-returns*) (hash-table-count rps-agent-list))
-      (maphash #'(lambda (k v)
-                   (setf (gethash k *avg-returns*) (/ (+ (* v (1- so-far-numrounds)) (gethash k rps-agent-list)) so-far-numrounds)))
-               *avg-returns*)
-      (print "Update failed: the size of *avg-returns* and update table are not identical."))
-    (print "Update failed: the first argument is not a hash table or the second argument is not a number.")))
-
-(defun show-avg-returns (&optional agent-list)
-  ;; This function basically shows the values of *avg-returns*.
-  (print (gethash 'r *avg-returns*))
-  (print (gethash 'p *avg-returns*))
-  (print (gethash 's *avg-returns*))
-  (if agent-list
-    (dolist (agnt agent-list)
-      (print (gethash agnt *avg-returns*)))))
-
-(defun list-to-hash-table(results)
-  ;; This function tranforms the results of r,p,s into a hash table
-  (if results
-    (progn
-      (setf rps-table (make-hash-table :size 100))
-      (setf (gethash 'r rps-table) (first results))
-      (setf (gethash 'p rps-table) (second results))
-      (setf (gethash 's rps-table) (third results))
-      rps-table)))
-|#
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -219,27 +164,14 @@
               (setq scores (replace-nth scores curagent 0)))))
         (push (list r p s) results)
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (print "====================================")
-        (print results)
-        (print scores)
-        (print *avg-returns*)
-        (print "-------------")
+        ;; (print "====================================")
+        ;; (print results)
+        ;; (print scores)
+        ;; (print *avg-returns*)
+        ;; (print "-------------")
         (update-avg-returns scores results)
-        (print *avg-returns*)
+        ;; (print *avg-returns*)
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;        ;(print scores)
-;        ;(print results)
-;        (setf rps-agent-update-table (list-to-hash-table (first results)))
-;        (dotimes (x (length agents))
-;          (setf (gethash (nth x agents) rps-agent-update-table) (nth x scores)))
-;        ;(print rps-agent-update-table)
-;        ;(init-avg-returns agents) ; this should actually be in monitor, here for test
-;        
-;        ;don't forget to add 1 to numtournament! the first value of numtournament is 0!
-;        (update-avg-returns rps-agent-update-table (+ (1+ iter) (* numtimes numtournament)))
-;        ;(show-avg-returns agents)
-;        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
         ))
       (dotimes (x (length agents))
         (if (nth x legal-status)
