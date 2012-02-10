@@ -1,16 +1,6 @@
-;;; 1. my legalp is added
-;;; 2. random-agent is added
-;;; 3. monitor is modified, eliminating undefined agents
-;;; 4. *avg-returns* are added
-;;; 5. manipulation functions for *avg-returns* are added
-;;; 6. added flatten-results function for compressing results
-;;; 7. added *avg-return*. see comments in tournament and monitor
-;;;
-;;; remarks:
-;;;     run the monitor just by loading this source file in sbcl
-;;;
-;;;; CMPS 140 Tournament Monitor
-;;;; Each agent starts with 200 points. There are 1000 rounds per tournament.
+;;; CMPS 240: Artificial Intelligence, P2 - monitor
+;;; Kerui Huang
+
 (defun simple-agent (rounds scores myscore)
   '(1 R))
 (defun simple-agent2 (rounds scores myscore)
@@ -61,7 +51,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;   This is my legalp function.  ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun legalp (&optional parameters)
-  ;; This function validates the play/input given by the player.
+  ;; This function validates the play/input given by the agent.
   (if parameters ; when the input is null, return false
     (if (listp parameters) ; when the input is not a list, return false
       (and
@@ -92,11 +82,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun init-avg-returns (agents)
-  ;; This function is used for initializing *avg-returns*.
+  ;; This function initializes/resets *avg-returns*.
   (setf *avg-returns* (make-list (+ 3 (length agents)) :initial-element 0)))
 
 (defun update-avg-returns (scores results)
-  ;; This function is for updating *avg-returns* each round based on
+  ;; This function updates *avg-returns* each round based on
   ;; scores and results.
   (let ((rounds (length results)) (r 0) (p 0) (s 0))
     (dotimes (x rounds)

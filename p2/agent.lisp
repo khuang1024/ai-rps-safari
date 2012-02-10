@@ -1,3 +1,6 @@
+;;;; CMPS 240: Artificial Intelligence, P2 - monitor
+;;; Kerui Huang
+;;;
 ;;; 1. This agent takes the total numbers of rock, paper, scissor into
 ;;; account. Based on how scores are calculated and the whole history of
 ;;; rock, paper, scissor, it chooses the best one which is most possible to
@@ -35,6 +38,7 @@
       (list r p s))))
 
 (defun bet-weight (myscore)
+  ;; This function provides how much we bet for this round.
   (if (<= myscore 0)
     (if (= myscore (abs myscore))
       1
@@ -55,7 +59,7 @@
       )))
 
 (defun bet-choice (rounds)
-  ;; This function makes the bet decision.
+  ;; This function chooses which one, rock, paper or scissor, to bet.
   (let ((r (- (third rounds) (second rounds)))
         (p (- (first rounds) (third rounds)))
         (s (- (second rounds) (first rounds))))
