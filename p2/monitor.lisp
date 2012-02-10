@@ -121,9 +121,7 @@
 ;;;; (sign 2)
 
 
-(defun tournament (agents numtimes numtournament)
-  ;; This function is modified a little bit by adding a new argument -- numtournament.
-  ;; This is for calculating *avg-returns*.
+(defun tournament (agents numtimes)
   (let ((scores (make-list (length agents) :initial-element 1))
 	(net-scores nil) (results nil) (legal-status (make-list (length agents) :initial-element t)))
     (print "Running tournament")
@@ -191,7 +189,7 @@
     (dolist (agnt agent-list)
       (setf (gethash agnt agents) 0))
     (dotimes (x numtimes)
-      (let ((curRank 0) (results (tournament agent-list 1000 x)))
+      (let ((curRank 0) (results (tournament agent-list 1000)))
         (dolist (agent-result results)
           (if (listp agent-result)
             (progn
