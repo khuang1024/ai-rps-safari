@@ -35,10 +35,20 @@
       (list r p s))))
 
 (defun bet-weight (myscore)
-  (progn 
-    (setf x (ceiling (* 10 (atan (* 0.05 (- myscore 200))))))
-    (numberp x)
-    x))
+  (if (<= myscore 0)
+    (if (= myscore (abs myscore))
+      1
+      -1)
+    (progn 
+      (setf x (ceiling (* 10 (atan (* 0.05 (- myscore 200))))))
+      (if (> x 0)
+        (if (> x myscore)
+          (setf x myscore))
+        (if (< x (- 0 myscore))
+          (setf x (- 0 myscore))))
+      (if (= x 0)
+        (setf x 1))
+      )))
 
 (defun bet-choice (rounds)
   ;; This function makes the bet decision.
@@ -51,16 +61,3 @@
         (setf choice 'p)
         (setf choice 's)))
     choice))
-
-;; test cases
-(setf y1 '(1 2 3))
-(setf y2 '(3 3 3))
-(setf y3 '(4 2 1))
-(setf y4 '(3 9 2))
-(setf rounds (list y1 y2 y3 y4))
-(setf scores '(210 200 190 200))
-(setf bid (agent rounds scores 230))
-;(funcall x-agent rounds scores 230)
-;(numberp (first bid))
-;(setf funs (list x-agent x-agent x-agent))
-;(first (funcall (first funs) rounds scores 230)
