@@ -52,22 +52,6 @@
         (setf choice 's)))
     choice))
 
-#|
-(defun bet(rounds myscore)
-  ;; This function makes the bet decision.
-  (let ((r (- (third rounds) (second rounds)))
-        (p (- (first rounds) (third rounds)))
-        (s (- (second rounds) (first rounds))))
-    (if (equal r (max r p s))
-      (setf choice 'r)
-      (if (equal p (max r p s))
-        (setf choice 'p)
-        (setf choice 's)))
-
-    ;; how much is the bet?
-    (setf bid (ceiling (* 10 (atan (* 0.05 (- myscore 200))))))
-    (list bid choice)))
-|#
 ;; test cases
 (setf y1 '(1 2 3))
 (setf y2 '(3 3 3))
