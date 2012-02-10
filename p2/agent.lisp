@@ -17,7 +17,7 @@
   ;; This function is the agent function which is supposed to be called
   ;; when it is competing with other agents in tournament.
   (if (or (null rounds) (null scores) (null myscore))
-    (list '1 (nth (random 3) '(r p s))) ; if the input is initial state, just do a random bet
+    (list '1 (nth (random 3) '(r p s))) ; for the first bet, just do a random bet
     (if (not (and (listp rounds) (listp scores) (numberp myscore)))
       (list '1 (nth (random 3) '(r p s))) ; if the input is invalid, just do a random bet
       (progn
@@ -48,6 +48,10 @@
           (setf x (- 0 myscore))))
       (if (= x 0)
         (setf x 1))
+;      (print "---------------------")
+;      (print myscore)
+;      (print x)
+      x
       )))
 
 (defun bet-choice (rounds)
@@ -60,4 +64,6 @@
       (if (equal p (max r p s))
         (setf choice 'p)
         (setf choice 's)))
-    choice))
+;    (print choice)
+    choice
+    ))

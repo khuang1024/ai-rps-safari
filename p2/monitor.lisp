@@ -229,6 +229,6 @@
     results))
 
 ;; Returns a list of dotted pairs, with the agent and the score (numagents - avg rank)
-(monitor '(simple-agent random-agent agent) 10)
+; (monitor '(simple-agent simple-agent2 ) 10)
 
 ;(monitor agentlist 1000)
