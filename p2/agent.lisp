@@ -1,4 +1,20 @@
-(defun my-agent(rounds scores myscore)
+;;; 1. This agent takes the total numbers of rock, paper, scissor into
+;;; account. Based on how scores are calculated and the whole history of
+;;; rock, paper, scissor, it chooses the best one which is most possible to
+;;; win.
+;;;
+;;; 2. On the other hand, this agent weigh the bet based on its previous
+;;; performance, which means it looks at its current score and figure out
+;;; how it performs so far. If the score is greater than its intial score,
+;;; which means it performs well, it makes a positive bet based on how well
+;;; it performs. How well it performs is formulated by a matchematical
+;;; expression by using arctan function. The function is
+;;; 10*arctan(0.05*(x-200)) where x is the agent's current score and 200 is
+;;; the default starting points it used to have.
+
+
+
+(defun agent(rounds scores myscore)
   ;; This function is the agent function which is supposed to be called
   ;; when it is competing with other agents in tournament.
   (if (not (and (listp rounds) (listp scores) (numberp myscore)))
