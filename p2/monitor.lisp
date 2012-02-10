@@ -147,7 +147,7 @@
 (defun tournament (agents numtimes numtournament)
   ;; This function is modified a little bit by adding a new argument -- numtournament.
   ;; This is for calculating *avg-returns*.
-  (let ((scores (make-list (length agents) :initial-element 200))
+  (let ((scores (make-list (length agents) :initial-element 1))
 	(net-scores nil) (results nil) (legal-status (make-list (length agents) :initial-element t)))
     (print "Running tournament")
       (do ((iter 0 (setq iter (+ iter 1))))
