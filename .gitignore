@@ -1,4 +1,9 @@
 books/
 h*/
 *.swp
-writeup/
+*.aux
+*.dvi
+*.log
+*.pdf
+*.ps
+
