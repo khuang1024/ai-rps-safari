@@ -117,7 +117,7 @@ and we need to make sure the bet is positive [^5], we need to add
 
 Figure figure:a shows the change of the weight for positive cases.
 
-> {file=b.eps, height=2in, width=2.5in}{The function $f(x)=10\\times arctan(.05\\times (x - 100)) + 14, when\\ score\\geq 0$}(figure:a)
+> ![Image not found.]{https://github.com/khuang1024/ai-rps-safari/blob/master/p2/writeup/b.eps)
 
 
 [^1]:
