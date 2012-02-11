@@ -44,7 +44,7 @@
       1
       -1)
     (progn 
-      (setf x (ceiling (* 10 (atan (* 0.05 (- myscore 200))))))
+      (setf x (ceiling (+ 14 (* 10 (atan (* 0.05 (- myscore 100)))))))
       (if (> x 0)
         (if (> x myscore)
           (setf x myscore))
