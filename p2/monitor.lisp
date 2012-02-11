@@ -192,7 +192,7 @@
     (maphash #'(lambda (k v) (push (cons k (- (length agent-list) (ceiling (/ v numtimes)))) results)) agents)
     results))
 
-;; Returns a list of dotted pairs, with the agent and the score (numagents - avg rank)
-; (monitor '(simple-agent simple-agent simple-agent agent) 10)
+; Returns a list of dotted pairs, with the agent and the score (numagents - avg rank)
+; (monitor '(random-agent random-agent random-agent agent) 1)
 
 ;(monitor agentlist 1000)
