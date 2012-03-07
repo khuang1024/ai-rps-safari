@@ -6,4 +6,6 @@ h*/
 *.log
 *.pdf
 *.ps
-
+*.bbl
+*.blg
+*.p
